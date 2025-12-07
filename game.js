@@ -76,7 +76,7 @@ const puzzles = [
     }
 ];
 
-
+let currentPuzzleIndex = 0;
 let currentPuzzle = null;
 let selectedWords = [];
 let mistakes = 0;
@@ -85,13 +85,12 @@ let remainingWords = [];
 
 // Initialize game
 function initGame() {
-    currentPuzzle = puzzles[0]; // Start with first puzzle
+    currentPuzzle = puzzles[currentPuzzleIndex];
     mistakes = 0;
     solvedCategories = [];
     selectedWords = [];
-    
-    // Flatten all words and shuffle
-    remainingWords = currentPuzzle.categories.flatMap(cat => 
+
+    remainingWords = currentPuzzle.categories.flatMap(cat =>
         cat.words.map(word => ({
             word: word,
             category: cat.name,
@@ -99,11 +98,10 @@ function initGame() {
         }))
     );
     shuffleArray(remainingWords);
-    
     updateDisplay();
 }
 
-// Shuffle array
+// Shuffle array util
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
@@ -113,15 +111,12 @@ function shuffleArray(array) {
 
 // Update display
 function updateDisplay() {
-    // Update mistakes
     document.getElementById('mistakes').textContent = mistakes;
-    
-    // Clear message
+
     const messageEl = document.getElementById('message');
     messageEl.textContent = '';
     messageEl.className = 'message';
-    
-    // Display solved categories
+
     const solvedContainer = document.getElementById('solved-categories');
     solvedContainer.innerHTML = '';
     solvedCategories.forEach(cat => {
@@ -133,8 +128,7 @@ function updateDisplay() {
         `;
         solvedContainer.appendChild(div);
     });
-    
-    // Display remaining words
+
     const board = document.getElementById('game-board');
     board.innerHTML = '';
     remainingWords.forEach(item => {
@@ -144,13 +138,11 @@ function updateDisplay() {
         tile.addEventListener('click', () => toggleWord(item.word, tile));
         board.appendChild(tile);
     });
-    
-    // Check win condition
+
     if (remainingWords.length === 0) {
         showMessage('🎉 Congratulations! You solved the puzzle!', 'correct');
     }
-    
-    // Check lose condition
+
     if (mistakes >= 4 && remainingWords.length > 0) {
         showMessage('Game Over! Try a new puzzle.', 'incorrect');
     }
@@ -158,8 +150,8 @@ function updateDisplay() {
 
 // Toggle word selection
 function toggleWord(word, tileElement) {
-    if (mistakes >= 4) return;
-    
+    if (mistakes >= 4 || remainingWords.length === 0) return;
+
     const index = selectedWords.indexOf(word);
     if (index > -1) {
         selectedWords.splice(index, 1);
@@ -170,51 +162,59 @@ function toggleWord(word, tileElement) {
             tileElement.classList.add('selected');
         }
     }
-    
-    // Enable/disable submit button
+
     document.getElementById('submit-btn').disabled = selectedWords.length !== 4;
 }
 
-// Submit guess
+// Highlight selected group before checking
+function highlightSelectedGroup() {
+    const tiles = document.querySelectorAll('.word-tile');
+    tiles.forEach(tile => {
+        if (selectedWords.includes(tile.textContent)) {
+            tile.classList.add('group-selected');
+        }
+    });
+}
+
+// Submit guess with small animation
 function submitGuess() {
     if (selectedWords.length !== 4) return;
-    
-    // Check if selected words form a category
-    const category = currentPuzzle.categories.find(cat => {
-        const catWords = cat.words.map(w => w.toUpperCase());
-        const selected = selectedWords.map(w => w.toUpperCase());
-        return selected.every(w => catWords.includes(w)) && selected.length === catWords.length;
-    });
-    
-    if (category) {
-        // Correct!
-        showMessage(`Correct! ${category.name}`, 'correct');
-        solvedCategories.push({
-            name: category.name,
-            words: category.words,
-            difficulty: category.difficulty
-        });
-        
-        // Remove solved words
-        remainingWords = remainingWords.filter(item => 
-            !selectedWords.includes(item.word)
-        );
-        
-        selectedWords = [];
-        setTimeout(() => updateDisplay(), 1000);
-    } else {
-        // Incorrect
-        mistakes++;
-        showMessage('Not quite! Try again.', 'incorrect');
-        
-        // Deselect all
-        selectedWords = [];
-        setTimeout(() => {
-            updateDisplay();
-        }, 1000);
-    }
-    
+    if (mistakes >= 4) return;
+
+    highlightSelectedGroup();
     document.getElementById('submit-btn').disabled = true;
+
+    setTimeout(() => {
+        const category = currentPuzzle.categories.find(cat => {
+            const catWords = cat.words.map(w => w.toUpperCase());
+            const selected = selectedWords.map(w => w.toUpperCase());
+            return (
+                selected.every(w => catWords.includes(w)) &&
+                selected.length === catWords.length
+            );
+        });
+
+        if (category) {
+            showMessage(`Correct! ${category.name}`, 'correct');
+            solvedCategories.push({
+                name: category.name,
+                words: category.words,
+                difficulty: category.difficulty
+            });
+
+            remainingWords = remainingWords.filter(
+                item => !selectedWords.includes(item.word)
+            );
+
+            selectedWords = [];
+            setTimeout(() => updateDisplay(), 1200);
+        } else {
+            mistakes++;
+            showMessage('Not quite! Try again.', 'incorrect');
+            selectedWords = [];
+            setTimeout(() => updateDisplay(), 1200);
+        }
+    }, 250);
 }
 
 // Show message
@@ -230,10 +230,38 @@ function deselectAll() {
     updateDisplay();
 }
 
+// Animated shuffle of current board
+function shuffleBoard() {
+    if (mistakes >= 4 || remainingWords.length === 0) return;
+
+    const tiles = document.querySelectorAll('.word-tile');
+    tiles.forEach(tile => tile.classList.add('shuffling'));
+
+    setTimeout(() => {
+        tiles.forEach(tile => tile.classList.remove('shuffling'));
+        shuffleArray(remainingWords);
+        selectedWords = [];
+        updateDisplay();
+    }, 250);
+}
+
+// Next puzzle (cycles through puzzles)
+function nextPuzzle() {
+    currentPuzzleIndex = (currentPuzzleIndex + 1) % puzzles.length;
+    initGame();
+}
+
 // Event listeners
 document.getElementById('submit-btn').addEventListener('click', submitGuess);
 document.getElementById('deselect-btn').addEventListener('click', deselectAll);
-document.getElementById('new-puzzle-btn').addEventListener('click', initGame);
+document.getElementById('shuffle-btn').addEventListener('click', shuffleBoard);
+
+initGame();
+
+
+// Start
+initGame();
+
 
 // Start game
 initGame();
