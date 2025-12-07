@@ -310,22 +310,26 @@ button {
    ========================================== */
 @media (max-width: 600px) {
     .game-board {
-        grid-template-columns: repeat(4, 100px);
+        grid-template-columns: repeat(4, 120px);
         gap: var(--spacing-sm);
     }
 
     .word-tile {
-        width: 100px;
-        height: 100px;
+        width: 120px;
+        height: 120px;
         font-size: var(--font-size-small);
     }
 
     .solved-category {
-        height: 100px;
+        height: 120px;
     }
 
     h1 {
         font-size: 90px;
     }
-}
 
+    .solved-category {
+        height: 80px;
+        font-size: 12px;
+    }
+}
