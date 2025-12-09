@@ -227,6 +227,12 @@ h1 {
     animation: correctResolve 0.5s ease-out forwards;
 }
 
+.word-tile.completed {
+    opacity: 0.5;
+    cursor: default;
+}
+
+
 @keyframes correctResolve {
     0% {
         transform: translateY(0);

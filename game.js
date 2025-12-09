@@ -1,94 +1,90 @@
-const puzzles = [
-    {
-        id: "1",
-        categories: [
-            {
-                name: "Kitchen Utensils",
-                words: ["FORK", "SPOON", "KNIFE", "WHISK"],
-                difficulty: "yellow"
-            },
-            {
-                name: "Board Games",
-                words: ["RISK", "CLUE", "LIFE", "MONOPOLY"],
-                difficulty: "green"
-            },
-            {
-                name: "Things You Can DRAW",
-                words: ["BATH", "GUN", "CARD", "CURTAIN"],
-                difficulty: "blue"
-            },
-            {
-                name: "Words Before LINE",
-                words: ["SKY", "DEAD", "HEAD", "PUNCH"],
-                difficulty: "purple"
-            }
-        ]
-    },
-    {
-        id: "2",
-        categories: [
-            {
-                name: "Music Genres",
-                words: ["JAZZ", "ROCK", "BLUES", "FUNK"],
-                difficulty: "yellow"
-            },
-            {
-                name: "Body Parts",
-                words: ["HEART", "LUNG", "LIVER", "BRAIN"],
-                difficulty: "green"
-            },
-            {
-                name: "___ CARD (words before)",
-                words: ["CREDIT", "BUSINESS", "WILD", "REPORT"],
-                difficulty: "blue"
-            },
-            {
-                name: "Homophones of Letters",
-                words: ["BEE", "TEE", "JAY", "PEA"],
-                difficulty: "purple"
-            }
-        ]
-    },
-    {
-        id: "3",
-        categories: [
-            {
-                name: "European Capitals",
-                words: ["PARIS", "ROME", "BERLIN", "MADRID"],
-                difficulty: "yellow"
-            },
-            {
-                name: "Things That Are RED",
-                words: ["APPLE", "ROSE", "BRICK", "CHERRY"],
-                difficulty: "green"
-            },
-            {
-                name: "Brands of Cars",
-                words: ["FORD", "HONDA", "TESLA", "MAZDA"],
-                difficulty: "blue"
-            },
-            {
-                name: "___WOOD (words before)",
-                words: ["HOLLY", "DRIFT", "FIRE", "HARD"],
-                difficulty: "purple"
-            }
-        ]
-    }
-];
+console.log('game.js loaded');
 
+
+let puzzles = [];
 let currentPuzzleIndex = 0;
 let currentPuzzle = null;
 let selectedWords = [];
 let mistakes = 0;
 let solvedCategories = [];
 let remainingWords = [];
+let triedCombinations = new Set();
 
-// Initialize game
+
+// ------------------ DATE + PUZZLES ------------------
+
+function getTodayDDMMYYYY() {
+    const d = new Date();
+    const day = String(d.getDate()).padStart(2, '0');
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const year = d.getFullYear();
+    return `${day}.${month}.${year}`;
+}
+
+async function loadPuzzles() {
+    const res = await fetch('puzzles.json');
+    const data = await res.json();
+    const today = getTodayDDMMYYYY();
+    console.log('today:', today, 'data:', data);   // keep for debugging
+
+    puzzles = data.puzzles.filter(p => p.date === today);
+    console.log('filtered puzzles:', puzzles);
+}
+
+
+
+
+// ------------------ STORAGE KEYS ------------------
+
+const STORAGE_KEY_PREFIX = '4hiburim-puzzle-';
+const STATE_KEY_PREFIX = '4hiburim-state-';
+
+function getTodayKey() {
+    const today = getTodayDDMMYYYY();
+    const puzzleId = puzzles[0]?.id;
+    return `${STORAGE_KEY_PREFIX}${today}-${puzzleId}`;
+}
+
+function isTodayPuzzleLocked() {
+    const key = getTodayKey();
+    return localStorage.getItem(key) === 'done';
+}
+
+function lockTodayPuzzle() {
+    const key = getTodayKey();
+    localStorage.setItem(key, 'done');
+}
+
+function getTodayStateKey() {
+    const today = getTodayDDMMYYYY();
+    const puzzleId = puzzles[0]?.id;
+    return `${STATE_KEY_PREFIX}${today}-${puzzleId}`;
+}
+
+function saveFinalState(state) {
+    const key = getTodayStateKey();
+    localStorage.setItem(key, JSON.stringify(state));
+}
+
+function loadFinalState() {
+    const key = getTodayStateKey();
+    const raw = localStorage.getItem(key);
+    if (!raw) return null;
+    try {
+        return JSON.parse(raw);
+    } catch {
+        return null;
+    }
+}
+
+// ------------------ GAME INITIALIZATION ------------------
+
 function initGame() {
     currentPuzzle = puzzles[currentPuzzleIndex];
     mistakes = 0;
     solvedCategories = [];
     selectedWords = [];
+    triedCombinations = new Set();   // reset tried combos
 
     remainingWords = currentPuzzle.categories.flatMap(cat =>
         cat.words.map(word => ({
@@ -101,6 +97,7 @@ function initGame() {
     updateDisplay();
 }
 
+
 // Shuffle array util
 function shuffleArray(array) {
     for (let i = array.length - 1; i > 0; i--) {
@@ -109,9 +106,11 @@ function shuffleArray(array) {
     }
 }
 
-// Update display
+// ------------------ RENDER ------------------
+
 function updateDisplay() {
     document.getElementById('mistakes').textContent = mistakes;
+
     const solvedContainer = document.getElementById('solved-categories');
     solvedContainer.innerHTML = '';
     solvedCategories.forEach(cat => {
@@ -136,6 +135,19 @@ function updateDisplay() {
 
     if (remainingWords.length === 0) {
         showMessage('🎉 Congratulations! You solved the puzzle!', 'correct');
+
+        // Disable interactions but keep the board visible
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('deselect-btn').disabled = true;
+        document.getElementById('shuffle-btn').disabled = true;
+
+        const tiles = document.querySelectorAll('.word-tile');
+        tiles.forEach(tile => {
+            tile.classList.add('completed');
+            tile.style.pointerEvents = 'none';
+        });
+
+        return;
     }
 
     if (mistakes >= 4 && remainingWords.length > 0) {
@@ -143,25 +155,31 @@ function updateDisplay() {
     }
 }
 
-// Toggle word selection
+// ------------------ INTERACTION ------------------
+
 function toggleWord(word, tileElement) {
     if (mistakes >= 4 || remainingWords.length === 0) return;
 
     const index = selectedWords.indexOf(word);
+
     if (index > -1) {
+        // Deselect this tile
         selectedWords.splice(index, 1);
         tileElement.classList.remove('selected');
+        tileElement.classList.remove('group-selected');
     } else {
-        if (selectedWords.length < 4) {
-            selectedWords.push(word);
-            tileElement.classList.add('selected');
+        // Only allow selecting a new tile if currently fewer than 4 are selected
+        if (selectedWords.length >= 4) {
+            return; // ignore extra clicks until user deselects one
         }
+        selectedWords.push(word);
+        tileElement.classList.add('selected');
     }
 
     document.getElementById('submit-btn').disabled = selectedWords.length !== 4;
 }
 
-// Highlight selected group before checking
+
 function highlightSelectedGroup() {
     const tiles = document.querySelectorAll('.word-tile');
     tiles.forEach(tile => {
@@ -172,13 +190,21 @@ function highlightSelectedGroup() {
 }
 
 // Submit guess with small animation
-const PRE_CHECK_DELAY = 150;   // before checking the guess
-const CORRECT_DELAY   = 800;   // time to show "Correct" + tiles highlighted
-const WRONG_DELAY     = 450;   // time to show "Not quite" before reset
+const PRE_CHECK_DELAY = 150;
+const CORRECT_DELAY   = 800;
+const WRONG_DELAY     = 450;
 
 function submitGuess() {
     if (selectedWords.length !== 4) return;
     if (mistakes >= 4) return;
+
+    // Check for already tried combination (order independent)
+    const comboKey = selectedWords.slice().sort().join('|');
+    if (triedCombinations.has(comboKey)) {
+        showMessage('Already tried this combination.', 'incorrect');
+        return; // no animation, no mistake
+    }
+    triedCombinations.add(comboKey);
 
     highlightSelectedGroup();
     document.getElementById('submit-btn').disabled = true;
@@ -194,112 +220,149 @@ function submitGuess() {
         });
 
         if (category) {
-    showMessage('Correct!', 'correct');   // only the word "Correct!"
+            showMessage('Correct!', 'correct');
 
-    const tiles = document.querySelectorAll('.word-tile');
+            const tiles = document.querySelectorAll('.word-tile');
 
-    const CORRECT_HOP_DURATION     = 250;  // hop time
-    const PAUSE_AFTER_HOP          = 300;  // <-- you control this pause
-    const CORRECT_RESOLVE_DURATION = 500;  // dissolve up
-    const EXTRA_READ_TIME          = 800;  // message reading time
+            const CORRECT_HOP_DURATION     = 250;
+            const PAUSE_AFTER_HOP          = 300;
+            const CORRECT_RESOLVE_DURATION = 500;
+            const EXTRA_READ_TIME          = 800;
 
-    // 1) add hop class to selected tiles
-    tiles.forEach(tile => {
-        if (selectedWords.includes(tile.textContent)) {
-            tile.classList.add('correct-hop');
+            // 1) hop
+            tiles.forEach(tile => {
+                if (selectedWords.includes(tile.textContent)) {
+                    tile.classList.add('correct-hop');
+                }
+            });
+
+            // 2) remove hop
+            setTimeout(() => {
+                tiles.forEach(tile => {
+                    if (selectedWords.includes(tile.textContent)) {
+                        tile.classList.remove('correct-hop');
+                    }
+                });
+            }, CORRECT_HOP_DURATION);
+
+            // 3) dissolve up
+            setTimeout(() => {
+                tiles.forEach(tile => {
+                    if (selectedWords.includes(tile.textContent)) {
+                        tile.classList.add('correct-resolve');
+                    }
+                });
+            }, CORRECT_HOP_DURATION + PAUSE_AFTER_HOP);
+
+            // 4) update state
+            setTimeout(() => {
+                solvedCategories.push({
+                    name: category.name,
+                    words: category.words,
+                    difficulty: category.difficulty
+                });
+
+                remainingWords = remainingWords.filter(
+                    item => !selectedWords.includes(item.word)
+                );
+
+                selectedWords = [];
+
+                // if puzzle fully solved: lock + save solved state
+                if (remainingWords.length === 0) {
+                    lockTodayPuzzle();
+                    saveFinalState({
+                        type: 'solved',
+                        solvedCategories: solvedCategories.slice(),
+                        mistakes
+                    });
+                }
+
+                updateDisplay();
+                showMessage('', '');
+            }, CORRECT_HOP_DURATION + PAUSE_AFTER_HOP + CORRECT_RESOLVE_DURATION + EXTRA_READ_TIME);
+
+        } else {
+            mistakes++;
+            showMessage('Not quite! Try again.', 'incorrect');
+
+            const tiles = document.querySelectorAll('.word-tile');
+            tiles.forEach(tile => {
+                if (selectedWords.includes(tile.textContent)) {
+                    tile.classList.add('wrong-guess');
+                }
+            });
+
+            const JIGGLE_DURATION = 300;
+            const EXTRA_READ_TIME = 1000;
+
+            setTimeout(() => {
+                tiles.forEach(tile => {
+                    tile.classList.remove('wrong-guess');
+                    // keep selection so user can edit the 4 tiles
+                    // tile.classList.remove('selected', 'group-selected');
+                });
+                // keep selectedWords so user can modify selection
+                // selectedWords = [];
+
+                document.getElementById('mistakes').textContent = mistakes;
+
+                if (mistakes >= 4) {
+                    // lock and save full solution
+                    lockTodayPuzzle();
+                    const fullSolution = currentPuzzle.categories.map(cat => ({
+                        name: cat.name,
+                        words: cat.words,
+                        difficulty: cat.difficulty
+                    }));
+
+                    const finalState = {
+                        type: 'failed',
+                        solvedCategories: fullSolution,
+                        mistakes
+                    };
+                    saveFinalState(finalState);
+
+                    // show solution immediately
+                    solvedCategories = finalState.solvedCategories;
+                    remainingWords = [];
+                    updateDisplay();
+                    showMessage('Better luck tomorrow! Here’s the solution.', 'incorrect');
+
+                    // freeze UI
+                    document.getElementById('submit-btn').disabled = true;
+                    document.getElementById('deselect-btn').disabled = true;
+                    document.getElementById('shuffle-btn').disabled = true;
+
+                    const tiles2 = document.querySelectorAll('.word-tile');
+                    tiles2.forEach(tile => {
+                        tile.classList.add('completed');
+                        tile.style.pointerEvents = 'none';
+                    });
+                }
+            }, JIGGLE_DURATION + EXTRA_READ_TIME);
+
+            setTimeout(() => {
+                showMessage('', '');
+            }, JIGGLE_DURATION + EXTRA_READ_TIME);
         }
-    });
-
-    // 2) after hop finishes, remove hop and pause (no dissolve yet)
-    setTimeout(() => {
-        tiles.forEach(tile => {
-            if (selectedWords.includes(tile.textContent)) {
-                tile.classList.remove('correct-hop');
-            }
-        });
-    }, CORRECT_HOP_DURATION);
-
-    // 3) after hop + pause, start dissolve upwards
-    setTimeout(() => {
-        tiles.forEach(tile => {
-            if (selectedWords.includes(tile.textContent)) {
-                tile.classList.add('correct-resolve');
-            }
-        });
-    }, CORRECT_HOP_DURATION + PAUSE_AFTER_HOP);
-
-    // 4) after hop + pause + dissolve + read time, update state and clear message
-    setTimeout(() => {
-        solvedCategories.push({
-            name: category.name,
-            words: category.words,
-            difficulty: category.difficulty
-        });
-
-        remainingWords = remainingWords.filter(
-            item => !selectedWords.includes(item.word)
-        );
-
-        selectedWords = [];
-        updateDisplay();
-
-        showMessage('', '');  // hide "Correct!"
-    }, CORRECT_HOP_DURATION + PAUSE_AFTER_HOP + CORRECT_RESOLVE_DURATION + EXTRA_READ_TIME);
-} else {
-    mistakes++;
-    showMessage('Not quite! Try again.', 'incorrect');
-
-    const tiles = document.querySelectorAll('.word-tile');
-    tiles.forEach(tile => {
-        if (selectedWords.includes(tile.textContent)) {
-            tile.classList.add('wrong-guess');
-        }
-    });
-
-    const JIGGLE_DURATION = 300;
-    const EXTRA_READ_TIME = 1000;  // message stays visible for 1 second after jiggle
-
-    setTimeout(() => {
-        // 1) remove the jiggle class so background can fade back
-        tiles.forEach(tile => {
-            tile.classList.remove('wrong-guess');
-        });
-
-        // 2) clear selection visuals without rebuilding the grid
-        tiles.forEach(tile => {
-            tile.classList.remove('selected', 'group-selected');
-        });
-        selectedWords = [];
-
-        // 3) now update the mistakes display only
-        document.getElementById('mistakes').textContent = mistakes;
-    }, JIGGLE_DURATION + EXTRA_READ_TIME);
-
-    // 4) clear the error message after the same duration
-    setTimeout(() => {
-        showMessage('', '');
-    }, JIGGLE_DURATION + EXTRA_READ_TIME);
-}
-
 
     }, PRE_CHECK_DELAY);
 }
 
+// ------------------ UTILS ------------------
 
-// Show message
 function showMessage(text, type) {
     const messageEl = document.getElementById('message');
     messageEl.textContent = text;
     messageEl.className = `message ${type}`;
 }
 
-// Deselect all
 function deselectAll() {
     selectedWords = [];
     updateDisplay();
 }
 
-// Animated shuffle of current board
 function shuffleBoard() {
     if (mistakes >= 4 || remainingWords.length === 0) return;
 
@@ -315,34 +378,73 @@ function shuffleBoard() {
 }
 
 function handleResize() {
-    // Ensure no horizontal scroll and layout is recalculated
     document.body.style.overflowX = 'hidden';
     document.body.style.width = '100%';
 }
 
 window.addEventListener('orientationchange', () => {
-    setTimeout(handleResize, 300);   // let the browser finish rotating first
+    setTimeout(handleResize, 300);
 });
 
 window.addEventListener('resize', handleResize);
 
-// Next puzzle (cycles through puzzles)
+// Next puzzle (not really used with daily lock, but kept)
 function nextPuzzle() {
     currentPuzzleIndex = (currentPuzzleIndex + 1) % puzzles.length;
     initGame();
 }
+
+// ------------------ STARTUP ------------------
 
 // Event listeners
 document.getElementById('submit-btn').addEventListener('click', submitGuess);
 document.getElementById('deselect-btn').addEventListener('click', deselectAll);
 document.getElementById('shuffle-btn').addEventListener('click', shuffleBoard);
 
-initGame();
+async function startGame() {
+    console.log('startGame called');
+    await loadPuzzles();
+    console.log('puzzles after load:', puzzles);
 
+    if (puzzles.length === 0) {
+        showMessage('No puzzles loaded.', 'incorrect');
+        return;
+    }
 
-// Start
-initGame();
+    currentPuzzleIndex = 0;
+    initGame();
+    console.log('initGame finished');
 
+    if (isTodayPuzzleLocked()) {
+        const state = loadFinalState();
+        console.log('loaded final state:', state);
 
-// Start game
-initGame();
+        if (state && state.type === 'solved') {
+            solvedCategories = state.solvedCategories;
+            remainingWords = [];
+            mistakes = state.mistakes;
+            updateDisplay();
+            showMessage('🎉 Congratulations! You solved the puzzle!', 'correct');
+        } else if (state && state.type === 'failed') {
+            solvedCategories = state.solvedCategories;
+            remainingWords = [];
+            mistakes = state.mistakes;
+            updateDisplay();
+            showMessage('Better luck tomorrow! Here’s the solution.', 'incorrect');
+        }
+
+        // freeze UI
+        document.getElementById('submit-btn').disabled = true;
+        document.getElementById('deselect-btn').disabled = true;
+        document.getElementById('shuffle-btn').disabled = true;
+
+        const tiles = document.querySelectorAll('.word-tile');
+        tiles.forEach(tile => {
+            tile.classList.add('completed');
+            tile.style.pointerEvents = 'none';
+        });
+    }
+}
+
+// IMPORTANT: this must be after the function is defined
+startGame();

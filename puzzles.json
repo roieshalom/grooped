@@ -1,0 +1,166 @@
+{
+  "puzzles": [
+    {
+      "id": "0",
+      "date": "09.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Kitchen Utensils",
+          "words": ["FORK", "SPOON", "KNIFE", "WHISK"],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Board Games",
+          "words": ["RISK", "CLUE", "LIFE", "MONOPOLY"],
+          "difficulty": "green"
+        },
+        {
+          "name": "Things You Can DRAW",
+          "words": ["BATH", "GUN", "CARD", "CURTAIN"],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Words Before LINE",
+          "words": ["SKY", "DEAD", "HEAD", "PUNCH"],
+          "difficulty": "purple"
+        }
+      ]
+    },
+    {
+      "id": "1",
+      "date": "10.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Kitchen Utensils",
+          "words": ["FORK", "SPOON", "KNIFE", "WHISK"],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Board Games",
+          "words": ["RISK", "CLUE", "LIFE", "MONOPOLY"],
+          "difficulty": "green"
+        },
+        {
+          "name": "Things You Can DRAW",
+          "words": ["BATH", "GUN", "CARD", "CURTAIN"],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Words Before LINE",
+          "words": ["SKY", "DEAD", "HEAD", "PUNCH"],
+          "difficulty": "purple"
+        }
+      ]
+    },
+    {
+      "id": "2",
+      "date": "11.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Coffee Drinks",
+          "words": ["LATTE", "MOCHA", "ESPRESSO", "CAPPUCCINO"],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Types of Trees",
+          "words": ["OAK", "PINE", "MAPLE", "BIRCH"],
+          "difficulty": "green"
+        },
+        {
+          "name": "___ PARTY",
+          "words": ["TEA", "HOUSE", "THIRD", "DINNER"],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Anagrams of LOOP",
+          "words": ["POLO", "POOL"],
+          "difficulty": "purple"
+        }
+      ]
+    },
+    {
+      "id": "3",
+      "date": "12.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Social Media Apps",
+          "words": ["TWITTER", "FACEBOOK", "INSTAGRAM", "TIKTOK"],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Weather Conditions",
+          "words": ["RAIN", "SNOW", "WIND", "FOG"],
+          "difficulty": "green"
+        },
+        {
+          "name": "ROCK ___",
+          "words": ["STAR", "BOTTOM", "SOLID", "MUSIC"],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Words That Sound Like Numbers",
+          "words": ["WON", "TOO", "FOR", "ATE"],
+          "difficulty": "purple"
+        }
+      ]
+    },
+    {
+      "id": "4",
+      "date": "09.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Pizza Toppings",
+          "words": ["CHEESE", "PEPPERONI", "MUSHROOM", "OLIVE"],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Ocean Animals",
+          "words": ["SHARK", "WHALE", "DOLPHIN", "OCTOPUS"],
+          "difficulty": "green"
+        },
+        {
+          "name": "___ BALL",
+          "words": ["FOOT", "BASE", "BASKET", "SNOW"],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Four-Letter Words Starting with B",
+          "words": ["BEAR", "BOAT", "BIRD", "BOOK"],
+          "difficulty": "purple"
+        }
+      ]
+    },
+    {
+      "id": "5",
+      "date": "14.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Colors",
+          "words": ["RED", "BLUE", "GREEN", "YELLOW"],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Musical Instruments",
+          "words": ["PIANO", "GUITAR", "DRUMS", "VIOLIN"],
+          "difficulty": "green"
+        },
+        {
+          "name": "BREAK ___",
+          "words": ["FAST", "DOWN", "THROUGH", "DANCE"],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Double Letters",
+          "words": ["BOOK", "DOOR", "KEEP", "POOL"],
+          "difficulty": "purple"
+        }
+      ]
+    }
+  ]
+}
