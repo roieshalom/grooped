@@ -314,6 +314,18 @@ function shuffleBoard() {
     }, 250);
 }
 
+function handleResize() {
+    // Ensure no horizontal scroll and layout is recalculated
+    document.body.style.overflowX = 'hidden';
+    document.body.style.width = '100%';
+}
+
+window.addEventListener('orientationchange', () => {
+    setTimeout(handleResize, 300);   // let the browser finish rotating first
+});
+
+window.addEventListener('resize', handleResize);
+
 // Next puzzle (cycles through puzzles)
 function nextPuzzle() {
     currentPuzzleIndex = (currentPuzzleIndex + 1) % puzzles.length;
