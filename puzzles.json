@@ -76,7 +76,7 @@
         },
         {
           "name": "fingers",
-          "words": ["Toe", "Pinky", "Thumb", "middle"],
+          "words": ["TOE", "PINKY", "THUMB", "MIDDLE"],
           "difficulty": "purple"
         }
       ]
