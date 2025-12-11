@@ -53,5 +53,12 @@
             record_mask_text_selector: ''
         })
     </script>
+    <script type="text/javascript">
+    // Mark internal users via ?internal=1
+    if (window.location.search.includes('internal=1')) {
+        mixpanel.register({ internal_user: true });
+    }
+</script>
+
 </body>
 </html>

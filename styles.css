@@ -332,23 +332,26 @@ button {
     html, body {
         overflow-x: hidden;
         width: 100%;
+        margin: 0;
     }
 
     body {
-        padding: 30px 10px;  /* increased side padding from 5px to 10px for gaps */
+        padding: 30px 0;  /* no horizontal padding on body */
         position: relative;
     }
 
+    /* Add side padding to the main container */
     #game-container {
-        max-width: 100vw;
+        padding: 0 15px;  /* 15px gaps on left/right */
         box-sizing: border-box;
+        max-width: 100vw;
     }
 
     .game-board {
         grid-template-columns: repeat(4, 1fr);
         gap: 6px;
         width: 100%;
-        max-width: 100%;  /* changed from 510px to 100% to respect container */
+        max-width: none;  /* let it fill the padded container */
         margin: var(--spacing-lg) auto;
         box-sizing: border-box;
     }
@@ -371,5 +374,9 @@ button {
         min-height: 80px;
         box-sizing: border-box;
     }
-}
 
+    /* also pad buttons/message */
+    .controls, #message {
+        box-sizing: border-box;
+    }
+}
