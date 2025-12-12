@@ -151,7 +151,7 @@
           "LINE",
           "STONE"
         ],
-        "difficulty": "green"
+        "difficulty": "purple"
       },
       {
         "name": "Classical music composers",
@@ -198,7 +198,7 @@
           "BELL",
           "BERRY"
         ],
-        "difficulty": "green"
+        "difficulty": "purple"
       },
       {
         "name": "Shakespearean characters",
@@ -255,7 +255,7 @@
           "CHOPIN",
           "DEBUSSY"
         ],
-        "difficulty": "green"
+        "difficulty": "purple"
       },
       {
         "name": "Phrasal verbs with 'Out'",
@@ -302,7 +302,7 @@
           "MINOTAUR",
           "GRIFFIN"
         ],
-        "difficulty": "green"
+        "difficulty": "purple"
       },
       {
         "name": "Words That Can Precede 'Book'",
@@ -349,7 +349,7 @@
           "VIVALDI",
           "HANDEL"
         ],
-        "difficulty": "green"
+        "difficulty": "purple"
       },
       {
         "name": "Idioms with 'break'",
@@ -386,7 +386,7 @@
           "BULB",
           "SPEED"
         ],
-        "difficulty": "green"
+        "difficulty": "purple"
       },
       {
         "name": "Types of fabric",
