@@ -359,13 +359,18 @@ button {
 
 #deselect-btn:hover,
 #shuffle-btn:hover {
-  background-color: #f0f0f0;
+background-color: #f0f0f0;
 }
 
 .stats {
-  text-align: center;
+ font-family: var(--font-primary);
   font-size: var(--font-size-large);
   color: var(--color-text-muted);
+  margin: var(--spacing-lg);
+  width: 100%;
+  max-width: 510px;
+  margin: 0 auto 20px;  /* bottom margin: 32px */
+  text-align: center;
 }
 
 /* ==========================================
@@ -487,6 +492,6 @@ button {
   }
 
   .stats {
-    font-size: 14px;
+    font-size: 18px;
   }
 }

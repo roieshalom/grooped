@@ -275,12 +275,12 @@
     "language": "en",
     "categories": [
       {
-        "name": "Colors",
+        "name": "Parts of the eye",
         "words": [
-          "CYAN",
-          "MAGENTA",
-          "YELLOW",
-          "BLACK"
+          "PUPIL",
+          "IRIS",
+          "LID",
+          "LASH"
         ],
         "difficulty": "yellow"
       },
@@ -289,7 +289,7 @@
         "words": [
           "COLD",
           "BALL",
-          "FIRE",
+          "EYE",
           "BREATH"
         ],
         "difficulty": "green"
@@ -307,10 +307,10 @@
       {
         "name": "Words That Can Precede 'Book'",
         "words": [
-          "NOTEBOOK",
+          "PHONE",
           "GUIDE",
           "COOK",
-          "FACEBOOK"
+          "FACE"
         ],
         "difficulty": "blue"
       }
