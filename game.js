@@ -564,7 +564,7 @@ async function startGame() {
       mistakes = state.mistakes;
       renderFullSolutionGrid(solvedCategories);
       updateDisplay();
-      showMessage('🎉 You solved the puzzle!<br>Come back tomorrow<br>for a new puzzle', 'correct', 4000);
+      showMessage('🏆 You solved the puzzle!<br>Come back tomorrow<br>for a new puzzle', 'correct', 4000);
     } else if (state && state.type === 'failed') {
       solvedCategories = state.solvedCategories;
       remainingWords = [];
