@@ -449,17 +449,16 @@ background-color: #f0f0f0;
 .container {
   position: relative;
   width: 100%;
-  max-width: 510px;
+  max-width: 420px;
   margin: 20px auto 0;  /*top gap, centered */
+  padding: 0 8px;
 }
 
-  .game-board {
-    grid-template-columns: repeat(4, 1fr);
-    gap: 6px;
-    width: 100%;
-    max-width: 320px;
-    margin: var(--spacing-lg) auto;
-  }
+.game-board {
+  gap: 6px;
+  width: 100%;
+  margin: var(--spacing-lg) auto;
+}
 
   .word-tile {
     width: 100%;
