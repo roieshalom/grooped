@@ -481,7 +481,7 @@ background-color: #f0f0f0;
     position: relative;
     width: 100%;
     max-width: 420px;
-    margin: 20px auto 0;  /* top gap, centered */
+    margin: 10px auto 0;  /* top gap, centered */
     padding: 0 8px;
   }
 
