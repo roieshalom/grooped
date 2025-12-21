@@ -550,6 +550,53 @@
           "difficulty": "blue"
         }
       ]
-    }
+    },
+    {
+      "id": "13",
+      "date": "22.12.2025",
+      "language": "en",
+      "categories": [
+        {
+          "name": "Types of Knives",
+          "words": [
+            "CHEF",
+            "BUTTER",
+            "PARING",
+            "BREAD"
+          ],
+          "difficulty": "yellow"
+        },
+        {
+          "name": "Words Commonly Used in Chess",
+          "words": [
+            "CHECK",
+            "MATE",
+            "CASTLE",
+            "PAWN"
+          ],
+          "difficulty": "blue"
+        },
+        {
+          "name": "Green___",
+          "words": [
+            "HOUSE",
+            "LIGHT",
+            "HORN",
+            "CARD"
+          ],
+          "difficulty": "green"
+        },
+        {
+          "name": "_____ Ball",
+          "words": [
+            "CRYSTAL",
+            "SNOW",
+            "PIN",
+            "GLASS"
+        ],
+        "difficulty": "purple"
+      }
+    ]
+  }
   ]
 }
