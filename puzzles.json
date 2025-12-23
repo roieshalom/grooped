@@ -109,49 +109,50 @@
       },
       "categories": [
         {
-          "difficulty": "yellow",
           "name": "Coffee Drinks",
           "words": [
             "LATTE",
             "MOCHA",
             "ESPRESSO",
             "CAPPUCCINO"
-          ]
+          ],
+          "difficulty": "yellow"
         },
         {
-          "difficulty": "green",
           "name": "Types of Trees",
           "words": [
             "OAK",
             "PINE",
             "MAPLE",
             "BIRCH"
-          ]
+          ],
+          "difficulty": "green"
         },
         {
-          "difficulty": "blue",
           "name": "___ PARTY",
           "words": [
             "TEA",
             "HOUSE",
             "THIRD",
             "DINNER"
-          ]
+          ],
+          "difficulty": "blue"
         },
         {
-          "difficulty": "purple",
           "name": "fingers",
           "words": [
             "TOE",
             "PINKY",
             "THUMB",
             "MIDDLE"
-          ]
+          ],
+          "difficulty": "purple"
         }
       ],
       "date": "11.12.2025",
       "id": "2",
-      "language": "en"
+      "language": "en",
+      "status": "published"
     },
     {
       "_validation": {
