@@ -31,8 +31,8 @@ async function loadPuzzles() {
 
 // ------------------ STORAGE KEYS ------------------
 
-const STORAGE_KEY_PREFIX = '4hiburim-puzzle-';
-const STATE_KEY_PREFIX   = '4hiburim-state-';
+const STORAGE_KEY_PREFIX = 'grooped-puzzle-';
+const STATE_KEY_PREFIX   = 'grooped-state-';
 
 function getTodayKey() {
   const today = getTodayDDMMYYYY();
@@ -72,14 +72,80 @@ function loadFinalState() {
   }
 }
 
-const TROPHY_KEY = '4hiburim-trophies';
+const TROPHY_KEY = 'grooped-trophies';
+
+// ------------------ MIGRATION FROM OLD KEYS ------------------
+
+function migrateFromOldKeys() {
+  // Migrate trophies
+  const oldTrophyKey = '4hiburim-trophies';
+  const oldTrophyValue = localStorage.getItem(oldTrophyKey);
+  if (oldTrophyValue !== null && localStorage.getItem(TROPHY_KEY) === null) {
+    localStorage.setItem(TROPHY_KEY, oldTrophyValue);
+    console.log('Migrated trophies from old key');
+  }
+
+  // Migrate puzzle completion and state keys
+  const today = getTodayDDMMYYYY();
+  const puzzleId = puzzles[0]?.id;
+  
+  if (puzzleId) {
+    // Migrate puzzle completion
+    const oldPuzzleKey = `4hiburim-puzzle-${today}-${puzzleId}`;
+    const oldPuzzleValue = localStorage.getItem(oldPuzzleKey);
+    if (oldPuzzleValue !== null) {
+      const newPuzzleKey = getTodayKey();
+      if (localStorage.getItem(newPuzzleKey) === null) {
+        localStorage.setItem(newPuzzleKey, oldPuzzleValue);
+        console.log('Migrated puzzle completion from old key');
+      }
+    }
+
+    // Migrate state
+    const oldStateKey = `4hiburim-state-${today}-${puzzleId}`;
+    const oldStateValue = localStorage.getItem(oldStateKey);
+    if (oldStateValue !== null) {
+      const newStateKey = getTodayStateKey();
+      if (localStorage.getItem(newStateKey) === null) {
+        localStorage.setItem(newStateKey, oldStateValue);
+        console.log('Migrated state from old key');
+      }
+    }
+
+    // Migrate progress
+    const oldProgressKey = `4hiburim-progress-${today}-${puzzleId}`;
+    const oldProgressValue = localStorage.getItem(oldProgressKey);
+    if (oldProgressValue !== null) {
+      const newProgressKey = getTodayProgressKey();
+      if (localStorage.getItem(newProgressKey) === null) {
+        localStorage.setItem(newProgressKey, oldProgressValue);
+        console.log('Migrated progress from old key');
+      }
+    }
+  }
+
+  // Migrate all other puzzle keys (for past puzzles)
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+    if (key && key.startsWith('4hiburim-')) {
+      const newKey = key.replace('4hiburim-', 'grooped-');
+      if (localStorage.getItem(newKey) === null) {
+        const value = localStorage.getItem(key);
+        if (value !== null) {
+          localStorage.setItem(newKey, value);
+          console.log(`Migrated key: ${key} -> ${newKey}`);
+        }
+      }
+    }
+  }
+}
 
 // ----- in‑progress state -----
 
 function getTodayProgressKey() {
   const today = getTodayDDMMYYYY();
   const puzzleId = puzzles[0]?.id;
-  return `4hiburim-progress-${today}-${puzzleId}`;
+  return `grooped-progress-${today}-${puzzleId}`;
 }
 
 function saveProgressState() {
@@ -587,6 +653,9 @@ async function startGame() {
   console.log('startGame called');
   await loadPuzzles();
   console.log('puzzles after load:', puzzles);
+
+  // Migrate data from old localStorage keys
+  migrateFromOldKeys();
 
   updateTrophyDisplay(getTrophyCount());
 
