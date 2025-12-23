@@ -86,6 +86,8 @@ body {
   width: 100%;
   max-width: 510px;
   margin: 0 auto;
+  padding-inline: var(--spacing-lg);
+  box-sizing: border-box;
   display: flex;
   justify-content: space-between;
   align-items: baseline;   /* key line: align by text baseline */
@@ -106,6 +108,8 @@ h1 {
   font-size: var(--font-size-small);
   max-width: 510px;
   margin: 0 auto var(--spacing-xs);
+  padding-inline: var(--spacing-lg);
+  box-sizing: border-box;
   text-align: center;
 }
 
@@ -313,6 +317,11 @@ h1 {
 .solved-categories {
   margin-bottom: var(--spacing-sm);
   width: 100%;
+  max-width: 510px;
+  padding-inline: var(--spacing-lg);
+  box-sizing: border-box;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .solved-category {
@@ -566,10 +575,11 @@ background-color: #f0f0f0;
  font-family: var(--font-primary);
   font-size: var(--font-size-large);
   color: var(--color-text-muted);
-  margin: var(--spacing-lg);
   width: 100%;
   max-width: 510px;
   margin: 0 auto 20px;  /* bottom margin: 32px */
+  padding-inline: var(--spacing-lg);
+  box-sizing: border-box;
   text-align: center;
 }
 
