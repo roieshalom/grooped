@@ -20,7 +20,7 @@ function getTodayDDMMYYYY() {
 }
 
 async function loadPuzzles() {
-  const res = await fetch('2025_puzzles.json');
+  const res = await fetch('puzzles.json');
   const data = await res.json();
   const today = getTodayDDMMYYYY();
   console.log('today:', today, 'data:', data);
