@@ -4,42 +4,42 @@
       "language": "en",
       "categories": [
         {
-          "name": "Kitchen Utensils",
+          "name": "Fruits with seeds",
           "words": [
-            "FORK",
-            "SPOON",
-            "KNIFE",
-            "WHISK"
+            "APPLE",
+            "CHERRY",
+            "PEAR",
+            "GRAPE"
           ],
           "difficulty": "yellow"
         },
         {
-          "name": "Board Games",
+          "name": "Fruits without seeds",
           "words": [
-            "RISK",
-            "CLUE",
-            "LIFE",
-            "MONOPOLY"
+            "BANANA",
+            "PINEAPPLE",
+            "KUMQUAT",
+            "HONEYDEW"
           ],
           "difficulty": "green"
         },
         {
-          "name": "Things You Can DRAW",
+          "name": "Vegetables",
           "words": [
-            "BATH",
-            "GUN",
-            "CARD",
-            "CURTAIN"
+            "BROCCOLI",
+            "ARTICHOKE",
+            "ZUCCHINI",
+            "SPINACH"
           ],
           "difficulty": "blue"
         },
         {
-          "name": "\"____ LINE\"",
+          "name": "Root vegetables",
           "words": [
-            "SKY",
-            "DEAD",
-            "HEAD",
-            "PUNCH"
+            "CASSAVA",
+            "YAM",
+            "DAIKON",
+            "SUNCHOKE"
           ],
           "difficulty": "purple"
         }
