@@ -2,7 +2,25 @@
   "puzzles": [
     {
       "id": "0",
-      "date": "09.12.2025",
+      "categories": [
+        {
+          "name": "Test",
+          "words": [
+            "A",
+            "B",
+            "C",
+            "D"
+          ],
+          "difficulty": "yellow"
+        }
+      ],
+      "status": "published",
+      "date": "25.12.2025",
+      "language": "en"
+    },
+    {
+      "id": "1",
+      "date": "10.12.2025",
       "language": "en",
       "categories": [
         {
@@ -45,56 +63,7 @@
           ],
           "difficulty": "purple"
         }
-      ],
-      "status": "published"
-    },
-    {
-      "id": "1",
-      "date": "10.12.2025",
-      "language": "en",
-      "categories": [
-        {
-          "name": "Types of Clocks",
-          "words": [
-            "WALL",
-            "DIGITAL",
-            "SAND",
-            "POCKET"
-          ],
-          "difficulty": "yellow"
-        },
-        {
-          "name": "Weather Terms",
-          "words": [
-            "CIRRUS",
-            "CUMULUS",
-            "STRATUS",
-            "NIMBUS"
-          ],
-          "difficulty": "green"
-        },
-        {
-          "name": "Weather Phenomena",
-          "words": [
-            "TORNADO",
-            "HURRICANE",
-            "DROUGHT",
-            "LIGHTNING"
-          ],
-          "difficulty": "blue"
-        },
-        {
-          "name": "Abstract Concepts",
-          "words": [
-            "FREEDOM",
-            "EQUALITY",
-            "TRANSCENDENCE",
-            "SYNERGY"
-          ],
-          "difficulty": "purple"
-        }
-      ],
-      "status": "published"
+      ]
     },
     {
       "id": "2",
@@ -141,8 +110,7 @@
           ],
           "difficulty": "purple"
         }
-      ],
-      "status": "published"
+      ]
     },
     {
       "id": "3",
@@ -283,8 +251,7 @@
           ],
           "difficulty": "blue"
         }
-      ],
-      "status": "published"
+      ]
     },
     {
       "id": "6",
