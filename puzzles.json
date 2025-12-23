@@ -162,49 +162,50 @@
       },
       "categories": [
         {
-          "difficulty": "yellow",
           "name": "Voice types",
           "words": [
             "SOPRANO",
             "ALTO",
             "TENOR",
             "BASS"
-          ]
+          ],
+          "difficulty": "yellow"
         },
         {
-          "difficulty": "purple",
           "name": "'Light ____'",
           "words": [
             "HOUSE",
             "YEAR",
             "SPEED",
             "BULB"
-          ]
+          ],
+          "difficulty": "purple"
         },
         {
-          "difficulty": "green",
           "name": "Mythological Creatures",
           "words": [
             "HYDRA",
             "PHOENIX",
             "GRIFFIN",
             "SPHINX"
-          ]
+          ],
+          "difficulty": "green"
         },
         {
-          "difficulty": "blue",
           "name": "'Star ____'",
           "words": [
             "FISH",
             "DUST",
             "GATE",
             "WARS"
-          ]
+          ],
+          "difficulty": "blue"
         }
       ],
       "date": "12.12.2025",
       "id": "3",
-      "language": "en"
+      "language": "en",
+      "status": "published"
     },
     {
       "_validation": {
