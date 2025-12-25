@@ -1,5 +1,6 @@
 console.log('game.js loaded');
 
+
 let puzzles = [];
 let currentPuzzleIndex = 0;
 let currentPuzzle = null;
@@ -9,7 +10,35 @@ let solvedCategories = [];
 let remainingWords = [];
 let triedCombinations = new Set();
 
-// ------------------ DATE + PUZZLES ------------------
+
+// ------------------ CLARITY HELPERS ------------------
+
+
+function trackPuzzleEvent(eventName, extra = {}) {
+  if (typeof window === 'undefined' || typeof window.clarity !== 'function') return;
+
+  const today = getTodayDDMMYYYY();
+  const puzzleId = puzzles[0]?.id || currentPuzzle?.id || 'unknown';
+  const difficultySummary = currentPuzzle
+    ? currentPuzzle.categories.map(c => c.difficulty).join(',')
+    : '';
+
+  // base tags for filtering
+  window.clarity("set", "puzzle_id", String(puzzleId));
+  window.clarity("set", "puzzle_date", String(today));
+  window.clarity("set", "puzzle_difficulties", String(difficultySummary));
+
+  // extra tags if provided
+  Object.entries(extra).forEach(([key, value]) => {
+    window.clarity("set", String(key), String(value));
+  });
+
+  window.clarity("event", eventName); // API event Clarity can turn into a Smart Event[web:37][web:6]
+}
+
+
+// ------------------ DATE + Puzzles ------------------
+
 
 function getTodayDDMMYYYY() {
   const d = new Date();
@@ -18,6 +47,7 @@ function getTodayDDMMYYYY() {
   const year = d.getFullYear();
   return `${day}.${month}.${year}`;
 }
+
 
 async function loadPuzzles() {
   const res = await fetch('puzzles.json');
@@ -29,10 +59,13 @@ async function loadPuzzles() {
   console.log('filtered puzzles:', puzzles);
 }
 
+
 // ------------------ STORAGE KEYS ------------------
+
 
 const STORAGE_KEY_PREFIX = 'grooped-puzzle-';
 const STATE_KEY_PREFIX   = 'grooped-state-';
+
 
 function getTodayKey() {
   const today = getTodayDDMMYYYY();
@@ -40,15 +73,18 @@ function getTodayKey() {
   return `${STORAGE_KEY_PREFIX}${today}-${puzzleId}`;
 }
 
+
 function isTodayPuzzleLocked() {
   const key = getTodayKey();
   return localStorage.getItem(key) === 'done';
 }
 
+
 function lockTodayPuzzle() {
   const key = getTodayKey();
   localStorage.setItem(key, 'done');
 }
+
 
 function getTodayStateKey() {
   const today = getTodayDDMMYYYY();
@@ -56,10 +92,12 @@ function getTodayStateKey() {
   return `${STATE_KEY_PREFIX}${today}-${puzzleId}`;
 }
 
+
 function saveFinalState(state) {
   const key = getTodayStateKey();
   localStorage.setItem(key, JSON.stringify(state));
 }
+
 
 function loadFinalState() {
   const key = getTodayStateKey();
@@ -72,9 +110,12 @@ function loadFinalState() {
   }
 }
 
+
 const TROPHY_KEY = 'grooped-trophies';
 
+
 // ------------------ MIGRATION FROM OLD KEYS ------------------
+
 
 function migrateFromOldKeys() {
   // Migrate trophies
@@ -140,13 +181,16 @@ function migrateFromOldKeys() {
   }
 }
 
+
 // ----- in‑progress state -----
+
 
 function getTodayProgressKey() {
   const today = getTodayDDMMYYYY();
   const puzzleId = puzzles[0]?.id;
   return `grooped-progress-${today}-${puzzleId}`;
 }
+
 
 function saveProgressState() {
   const key = getTodayProgressKey();
@@ -159,6 +203,7 @@ function saveProgressState() {
   localStorage.setItem(key, JSON.stringify(state));
 }
 
+
 function loadProgressState() {
   const key = getTodayProgressKey();
   const raw = localStorage.getItem(key);
@@ -170,10 +215,12 @@ function loadProgressState() {
   }
 }
 
+
 function clearProgressState() {
   const key = getTodayProgressKey();
   localStorage.removeItem(key);
 }
+
 
 function getTrophyCount() {
   const raw = localStorage.getItem(TROPHY_KEY);
@@ -181,15 +228,18 @@ function getTrophyCount() {
   return isNaN(n) ? 0 : n;
 }
 
+
 function setTrophyCount(n) {
   localStorage.setItem(TROPHY_KEY, String(n));
 }
+
 
 function updateTrophyDisplay(value) {
   const el = document.getElementById('trophy-count');
   if (!el) return;
   el.textContent = value;
 }
+
 
 function incrementTrophyCount() {
   const current = getTrophyCount();
@@ -198,7 +248,9 @@ function incrementTrophyCount() {
   updateTrophyDisplay(next);
 }
 
+
 // ------------------ GAME INITIALIZATION ------------------
+
 
 function initGame() {
   currentPuzzle = puzzles[currentPuzzleIndex];
@@ -230,7 +282,9 @@ function initGame() {
   updateDisplay();
 }
 
+
 // Shuffle array util
+
 
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
@@ -239,7 +293,9 @@ function shuffleArray(array) {
   }
 }
 
+
 // ------------------ TEXT FIT HELPER ------------------
+
 
 function fitWordToTile(tile) {
   const textEl = tile.querySelector('.word-text');
@@ -263,7 +319,9 @@ function fitWordToTile(tile) {
   }
 }
 
+
 // ------------------ RENDER ------------------
+
 
 function updateDisplay() {
   document.getElementById('mistakes').textContent = mistakes;
@@ -282,24 +340,23 @@ function updateDisplay() {
   });
 
   const board = document.getElementById('game-board');
-board.innerHTML = '';
+  board.innerHTML = '';
 
-remainingWords.forEach(item => {
-  const tile = document.createElement('div');
-  tile.className = 'word-tile';
-  tile.innerHTML = `<span class="word-text">${item.word}</span>`;
+  remainingWords.forEach(item => {
+    const tile = document.createElement('div');
+    tile.className = 'word-tile';
+    tile.innerHTML = `<span class="word-text">${item.word}</span>`;
 
-  const textEl = tile.querySelector('.word-text');
-  if (item.word.includes(' ')) {
-    textEl.classList.add('has-space');
-  }
+    const textEl = tile.querySelector('.word-text');
+    if (item.word.includes(' ')) {
+      textEl.classList.add('has-space');
+    }
 
-  tile.addEventListener('click', () => toggleWord(item.word, tile));
+    tile.addEventListener('click', () => toggleWord(item.word, tile));
 
-  board.appendChild(tile);
-  fitWordToTile(tile);
-});
-
+    board.appendChild(tile);
+    fitWordToTile(tile);
+  });
 
   document.getElementById('submit-btn').disabled = selectedWords.length !== 4;
 
@@ -312,7 +369,9 @@ remainingWords.forEach(item => {
   }
 }
 
+
 // ------------------ INTERACTION ------------------
+
 
 function toggleWord(word, tileElement) {
   if (mistakes >= 4 || remainingWords.length === 0) return;
@@ -331,6 +390,7 @@ function toggleWord(word, tileElement) {
   document.getElementById('submit-btn').disabled = selectedWords.length !== 4;
 }
 
+
 function highlightSelectedGroup() {
   const tiles = document.querySelectorAll('.word-tile');
   tiles.forEach(tile => {
@@ -340,9 +400,12 @@ function highlightSelectedGroup() {
   });
 }
 
+
 // Submit guess with small animation
 
+
 const PRE_CHECK_DELAY = 150;
+
 
 function submitGuess() {
   if (selectedWords.length !== 4) return;
@@ -376,6 +439,7 @@ function submitGuess() {
     }
   }, PRE_CHECK_DELAY);
 }
+
 
 function handleCorrectGuess(category) {
   showMessage('Correct!', 'correct', 800);
@@ -434,6 +498,13 @@ function handleCorrectGuess(category) {
 
       incrementTrophyCount();
 
+      // ---- CLARITY: COMPLETED PUZZLE ----
+      trackPuzzleEvent("puzzle_completed", {
+        result: "solved",
+        mistakes: mistakes,
+        groups_solved: solvedCategories.length
+      }); // This becomes an API smart event in Clarity[web:37][web:38][web:6]
+
       remainingWords = [];
       renderFullSolutionGrid(solvedCategories);
     }
@@ -451,6 +522,7 @@ function handleCorrectGuess(category) {
     }
   }, CORRECT_HOP_DURATION + PAUSE_AFTER_HOP + CORRECT_RESOLVE_DURATION + EXTRA_READ_TIME);
 }
+
 
 function handleWrongGuess(selectedUpper) {
   let maxOverlap = 0;
@@ -498,6 +570,7 @@ function handleWrongGuess(selectedUpper) {
   }, JIGGLE_DURATION + EXTRA_READ_TIME);
 }
 
+
 function handleFailure() {
   lockTodayPuzzle();
   const fullSolution = currentPuzzle.categories.map(cat => ({
@@ -529,11 +602,21 @@ function handleFailure() {
     tile.classList.add('completed');
     tile.style.pointerEvents = 'none';
   });
+
+  // ---- CLARITY: FAILED PUZZLE ----
+  trackPuzzleEvent("puzzle_failed", {
+    result: "failed",
+    mistakes: mistakes,
+    groups_solved: solvedCategories.length
+  }); // This will be a separate API smart event[web:37][web:38][web:6]
 }
+
 
 // ------------------ UTILS ------------------
 
+
 let currentMessageTimeout = null;
+
 
 function showMessage(text, type = 'info', duration = 1200) {
   const overlay = document.getElementById('message-overlay');
@@ -566,6 +649,7 @@ function showMessage(text, type = 'info', duration = 1200) {
   }
 }
 
+
 function positionMessageOverBoard() {
   const overlay = document.getElementById('message-overlay');
   const board = document.getElementById('game-board');
@@ -580,11 +664,13 @@ function positionMessageOverBoard() {
   overlay.style.top = offsetFromContainerTop + 'px';
 }
 
+
 function deselectAll() {
   selectedWords = [];
   updateDisplay();
   saveProgressState();
 }
+
 
 function shuffleBoard() {
   if (mistakes >= 4 || remainingWords.length === 0) return;
@@ -600,6 +686,7 @@ function shuffleBoard() {
   }, 250);
 }
 
+
 function handleResize() {
   document.body.style.overflowX = 'hidden';
   document.body.style.width = '100%';
@@ -609,16 +696,20 @@ function handleResize() {
   tiles.forEach(fitWordToTile);
 }
 
+
 window.addEventListener('orientationchange', () => {
   setTimeout(handleResize, 300);
 });
 
+
 window.addEventListener('resize', handleResize);
+
 
 function nextPuzzle() {
   currentPuzzleIndex = (currentPuzzleIndex + 1) % puzzles.length;
   initGame();
 }
+
 
 function renderFullSolutionGrid(solutionCategories) {
   const board = document.getElementById('game-board');
@@ -643,11 +734,14 @@ function renderFullSolutionGrid(solutionCategories) {
 }
 
 
+
 // ------------------ STARTUP ------------------
+
 
 document.getElementById('submit-btn').addEventListener('click', submitGuess);
 document.getElementById('deselect-btn').addEventListener('click', deselectAll);
 document.getElementById('shuffle-btn').addEventListener('click', shuffleBoard);
+
 
 async function startGame() {
   console.log('startGame called');
@@ -701,5 +795,6 @@ async function startGame() {
     console.log('initGame finished');
   }
 }
+
 
 startGame();
